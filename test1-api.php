@@ -82,7 +82,7 @@ if(isset($_POST['hire_date']) && !empty($_POST['hire_date'])){
     exit(400);
 }
 
-$employee = new Employee($employeeNumber, $firstName, $lastName, $birthDate, $gender, $hireDate);
+$employee = new EmployeeHelper($employeeNumber, $firstName, $lastName, $birthDate, $gender, $hireDate);
 $employee->setMysqliDB($mysqli_db);
 $result = $employee->update();
 

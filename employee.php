@@ -6,7 +6,7 @@
  * Time: 12:29 AM
  */
 
-class Employee
+class EmployeeHelper
 {
     private $mysqliDB = null;
 

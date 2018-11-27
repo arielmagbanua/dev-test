@@ -21,6 +21,106 @@ function generate_id() {
 
 // @TODO: Create your class here
 
+class Employee{
+    public $emp_no = '';
+    public $first_name = '';
+    public $last_name = '';
+    public $birth_date = '';
+    public $gender = '';
+    public $hire_date = '';
+
+    public function __construct(){
+
+    }
+
+    /**
+     * @param string $emp_no
+     */
+    public function setEmpno($emp_no) {
+        $this->emp_no = $emp_no;
+    }
+
+    /**
+     * @param string $first_name
+     */
+    public function setFirstName($first_name) {
+        $this->first_name = $first_name;
+    }
+
+    /**
+     * @param string $last_name
+     */
+    public function setLastName($last_name) {
+        $this->last_name = $last_name;
+    }
+
+    /**
+     * @param string $birth_date
+     */
+    public function setBirthDate($birth_date) {
+        $this->birth_date = $birth_date;
+    }
+
+    /**
+     * @param string $gender
+     */
+    public function setGender($gender) {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @param string $hire_date
+     */
+    public function setHireDate($hire_date){
+        $this->hire_date =  $hire_date;
+    }
+
+    public function retrieve($employeeNumber){
+        $data = query("SELECT * FROM employees WHERE emp_no = '$employeeNumber'");
+        if(is_array($data) && count($data) > 0){
+            $employee = $data[0];
+
+            $this->emp_no = $employee['emp_no'];
+            $this->first_name = $employee['first_name'];
+            $this->last_name = $employee['last_name'];
+            $this->birth_date = $employee['birth_date'];
+            $this->gender = $employee['gender'];
+            $this->hire_date = $employee['hire_date'];
+        }
+    }
+
+    public static function get($employeeNumber){
+        $data = query("SELECT * FROM employees WHERE emp_no = '$employeeNumber'");
+
+        $employee = new Employee();
+
+        if(is_array($data) && count($data) > 0){
+            $employeeData = $data[0];
+
+            $employee->emp_no = $employeeData['emp_no'];
+            $employee->first_name = $employeeData['first_name'];
+            $employee->last_name = $employeeData['last_name'];
+            $employee->birth_date = $employeeData['birth_date'];
+            $employee->gender = $employeeData['gender'];
+            $employee->hire_date = $employeeData['hire_date'];
+        }
+
+        return $employee;
+    }
+
+    public function save(){
+
+        if(empty($this->emp_no)){
+            $this->emp_no = generate_id();
+
+            return query("INSERT INTO employees (emp_no, first_name, last_name, birth_date, gender, hire_date) VALUES('$this->emp_no', '$this->first_name', '$this->last_name', '$this->birth_date', '$this->gender', '$this->hire_date')");
+        } else {
+            return query("UPDATE employees SET first_name='$this->first_name', last_name='$this->last_name', birth_date='$this->birth_date', gender='$this->gender', hire_date='$this->hire_date' WHERE emp_no=$this->emp_no");
+        }
+
+    }
+}
+
 /**
  * Method: retrieve
  * Retrieve a record from the database and populate the object properties
@@ -33,6 +133,9 @@ function generate_id() {
 // @todo - replace this comment with your retrieve method
 // @todo - to generate a new primary key call the function generate_id()
 
+$employee = new Employee();
+$employee->retrieve('10001');
+echo "First name: " . $employee->first_name;
 
 /**
  * Method: save
@@ -46,7 +149,10 @@ function generate_id() {
   * $employee->save();
  */
 // @todo - replace this comment with your save method
-
+$employee = new Employee();
+$employee->retrieve('10001');
+$employee->first_name = 'Bob';
+$employee->save();
 
 // EXTRA FOR EXPERTS
 /**
@@ -60,7 +166,9 @@ function generate_id() {
  * $bob->save();
  */
 // @todo - replace this comment with your static get method
-
+$bob = Employee::get('10001');
+$bob->last_name = 'Peters';
+$bob->save();
 
 /**
  * A method to test your class
@@ -103,17 +211,21 @@ function test() {
         'gender' => 'M',
         'hire_date' => '2025-05-05',
     ];
+
 	$employee = new Employee();
     foreach ($data as $property => $value) {
         $employee->$property = $value;
     }
+
     $employee->save();
 
     // retrieve the new employee & ensure all fields set correctly
 	$check = query("SELECT * FROM employees WHERE first_name = 'Peter' AND last_name = 'Pan' AND birth_date = '2020-01-01'");
+
 	if (!is_array($check) || !$check[0]['emp_no']) {
 		fail('New employee failed to save');
 	}
+
 	$check = $check[0];
 	$data['emp_no'] = $check['emp_no'];
 	if ($data != $check) {
