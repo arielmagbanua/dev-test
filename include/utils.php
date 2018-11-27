@@ -2,7 +2,7 @@
 
 // global connection object
 global $mysqli_db;
-$mysqli_db = new mysqli('localhost', 'root', '', 'employees');
+$mysqli_db = new mysqli('localhost', 'homestead', 'secret', 'employees');
 
 /**
  * Execute a query & return the resulting data as an array of assoc arrays
