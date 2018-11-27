@@ -86,70 +86,80 @@ $smarty = new Smarty();
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
     <script>
         $(document).ready(function(){
-            $('#save-employee-form').submit(function(event){
-                event.preventDefault();
+            $('#save-employee-form').validate({
+                submitHandler: function(form) {
+                    let api = $(form).attr('action');
 
-                let api = $(this).attr('action');
+                    let empNo = $('#emp_no').val();
+                    let firstName = $('#first_name').val();
+                    let lastName = $('#last_name').val();
+                    let birthDate = $('#birth_date').val();
+                    let gender = $('#gender').val();
+                    let hireDate = $('#hire_date').val();
 
-                let empNo = $('#emp_no').val();
-                let firstName = $('#first_name').val();
-                let lastName = $('#last_name').val();
-                let birthDate = $('#birth_date').val();
-                let gender = $('#gender').val();
-                let hireDate = $('#hire_date').val();
+                    console.log(empNo);
+                    console.log(firstName);
+                    console.log(lastName);
+                    console.log(birthDate);
+                    console.log(gender);
+                    console.log(hireDate);
 
-                console.log(empNo);
-                console.log(firstName);
-                console.log(lastName);
-                console.log(birthDate);
-                console.log(gender);
-                console.log(hireDate);
+                    let apiURL = window.location.protocol + '//' + window.location.host + '/' + api;
+                    console.log(apiURL);
 
-                let apiURL = window.location.protocol + '//' + window.location.host + '/' + api;
-                console.log(apiURL);
+                    let payload = {
+                        emp_no: empNo,
+                        first_name: firstName,
+                        last_name: lastName,
+                        birth_date: birthDate,
+                        gender: gender,
+                        hire_date: hireDate
+                    };
 
-                let payload = {
-                    emp_no: empNo,
-                    first_name: firstName,
-                    last_name: lastName,
-                    birth_date: birthDate,
-                    gender: gender,
-                    hire_date: hireDate
-                };
+                    let formBody = [];
+                    for (let property in payload) {
+                        let encodedKey = encodeURIComponent(property);
+                        let encodedValue = encodeURIComponent(payload[property]);
+                        formBody.push(encodedKey + "=" + encodedValue);
+                    }
 
-                let formBody = [];
-                for (let property in payload) {
-                    let encodedKey = encodeURIComponent(property);
-                    let encodedValue = encodeURIComponent(payload[property]);
-                    formBody.push(encodedKey + "=" + encodedValue);
+                    formBody = formBody.join("&");
+
+                    // Use the Promise base fetch api
+                    fetch(apiURL, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        // body: JSON.stringify(payload)
+                        body: formBody
+                    }).then(response => response.json()).then(data => {
+                        console.log('success!');
+                        console.log(data);
+
+                        let updateResult = $('#update-result');
+                        updateResult.html('Employee has been successfully updated!!!');
+                        updateResult.css('color', '#00FF00');
+                    }).catch(error => {
+                        console.log(error);
+                        let updateResult = $('#update-result');
+                        updateResult.html('Something\'s wrong!!!');
+                        updateResult.css('color', '#FF0000');
+                    });
                 }
-
-                formBody = formBody.join("&");
-
-                // Use the Promise base fetch api
-                fetch(apiURL, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    // body: JSON.stringify(payload)
-                    body: formBody
-                }).then(response => response.json()).then(data => {
-                    console.log('success!');
-                    console.log(data);
-
-                    let updateResult = $('#update-result');
-                    updateResult.html('Employee has been successfully updated!!!');
-                    updateResult.css('color', '#00FF00');
-                }).catch(error => {
-                    console.log(error);
-                    let updateResult = $('#update-result');
-                    updateResult.html('Something\'s wrong!!!');
-                    updateResult.css('color', '#FF0000');
-                });
             });
+
+            // $('#save-employee-form').submit(function(event){
+            //     event.preventDefault();
+            //
+            //     let api = $(this).attr('action');
+            //
+            //
+            // });
         });
     </script>
 </body>
